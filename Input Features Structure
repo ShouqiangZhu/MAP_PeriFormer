@@ -1,0 +1,25 @@
+# Static features (per patient)
+static_features = {
+    'age': 53.0,
+    'bmi': 23.9,
+    'sex': 1,  # 0: Female, 1: Male
+    'asa_grade': 3,  # 1-5
+    'emergency_indicator': 0,  # 0: Elective, 1: Emergency
+    # ... other static features
+}
+
+# Dynamic features (time-series, 10-minute history)
+dynamic_features = {
+    'map': [85, 84, 83, 82, 81, 80, 79, 78, 77, 76],  # Last 10 minutes
+    'heart_rate': [72, 71, 70, 69, 68, 67, 66, 65, 64, 63],
+    'spo2': [98, 98, 98, 98, 98, 98, 98, 98, 98, 98],
+    # ... other vital signs
+}
+
+# Medication features (binary indicators)
+medication_features = {
+    'propofol': [0, 0, 1, 1, 1, 0, 0, 0, 0, 0],  # 1 if administered
+    'opioid': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'vasopressor': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    # ... other medications
+}
