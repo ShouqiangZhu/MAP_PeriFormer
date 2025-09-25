@@ -1,0 +1,16 @@
+from ioh_transformer import MAPPeriFormer, DataLoader
+
+# Load pre-trained model
+model = MAPPeriFormer.from_pretrained('map_periformer_weights.pth')
+
+# Prepare input data (format described below)
+input_data = {
+    'static_features': [...],      # Patient demographics
+    'dynamic_features': [...],     # Time-series vital signs
+    'medication_features': [...]   # Drug administration records
+}
+
+# Make predictions
+predictions = model.predict(input_data)
+continuous_map = predictions['continuous']  # 3,5,10-min MAP
+hypotension_prob = predictions['binary']    # Hypotension probability
