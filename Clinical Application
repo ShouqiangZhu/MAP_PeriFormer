@@ -1,0 +1,10 @@
+# Real-time prediction pipeline
+def monitor_patient(patient_data):
+    predictions = model.predict(patient_data)
+    
+    # Alert for impending hypotension
+    if predictions['binary']['3min'] > 0.7:  # 70% probability threshold
+        send_alert("High hypotension risk in 3 minutes")
+        
+    # Display MAP trajectory
+    display_map_trajectory(predictions['continuous'])
