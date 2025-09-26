@@ -1,0 +1,180 @@
+
+Training machine configuration：
+- GPU：NVIDIA GeForce RTX 4090
+- CPU：Intel Xeon Gold 6430 (128) @ 3.400GHz
+- OS: Ubuntu 22.04.4
+- Mem: 72G
+
+Development editor：
+- Visual Studio Code 版本: 1.104.1
+
+
+The model to use：
+- Temporal Fusion Transformer
+
+Three-party library for training and verification：
+- pytorch-forecasting
+- lightning
+
+Python：
+- 3.12
+
+Major dependencies on libraries：
+
+```
+pytorch-forecasting==1.4.0
+pandas~=2.3.0
+numpy~=1.26.4
+scikit-learn==1.7.0
+scipy~=1.15.3
+pytorch-lightning==2.5.1.post0
+lightning-utilities==0.14.3
+lightning===2.5.1.post0
+torch==2.5.1
+argparse~=1.4.0
+pytorch_optimizer
+tensorboard
+tensorboardX
+matplotlib~=3.10.3
+tabulate~=0.9.0
+seaborn~=0.13.2
+imbalanced-learn
+optuna
+statsmodels  # required by optuna
+optuna-integration  # required by optuna
+captum~=0.8.0
+pydantic~=2.11.7
+vitaldb~=1.4.11
+pyarrow==21.0.0
+```
+
+Training parameters：
+
+```
+{
+    "target": "MIN_MAP_IN_3MIN",
+    "static_categoricals": [
+        "SEX",
+        "AGE_LEVEL",
+        "BMI_LEVEL",
+        "HIGH_BLOOD_TYPE",
+        "HIGH_DIABETES_TYPE",
+        "OPERATING_DEPT",
+        "EMERGENCY_INDICATOR",
+        "ASA_GRADE",
+        "ANESTHESIA_METHOD"
+    ],
+    "static_reals": [
+        "AGE",
+        "BMI"
+    ],
+    "time_varying_unknown_categoricals": [
+        "OPIOID_CI",
+        "OPIOID",
+        "SEDATIVES",
+        "KETAMINE",
+        "BENZODIAZEPINE",
+        "ALPHA2",
+        "NDMR",
+        "VASOPRESSOR_CI",
+        "VASOPRESSOR",
+        "CARDIOTONIC_CI",
+        "COLLOID",
+        "BLOOD",
+        "CRYSTALLOID"
+    ],
+    "time_varying_unknown_reals": [
+        "MAP",
+        "HEART_RATE",
+        "BREATH",
+        "PULSE",
+        "SPO2",
+        "ETCO2",
+        "PSBP",
+        "PDBP",
+        "NON_INVASIVE_SBP",
+        "NON_INVASIVE_DBP"
+    ],
+    "batch_size": 7040,
+    "min_encoder_length": 15,
+    "max_encoder_length": 30,
+    "max_prediction_length": 1,
+    "hidden_size": 128,
+    "hidden_continuous_size": 64,
+    "attention_head_size": 4,
+    "dropout": 0.1,
+    "learning_rate": 0.00005,
+    "enable_one_cycle_lr_params": {
+        "max_lr": 0.00008,
+        "pct_start": 0.15
+    },
+    "loss_params": {
+        "base_metric_name": "quantile",
+        "positive_range": [
+            0,
+            70
+        ],
+        "positive_weight": 15.0
+    },
+    "reduce_on_plateau_patience": 3,
+    "reduce_on_plateau_params": null,
+    "optimizer": "adamw",
+    "weight_decay": 0.00004,
+    "log_every_n_steps": 400,
+    "enable_amp": true,
+    "min_epoches": 5,
+    "max_epoches": 100,
+    "checkpoint_params": {
+        "monitor": "val_loss",
+        "mode": "min",
+        "every_n_epochs": 1,
+        "save_weights_only": false,
+        "verbose": true
+    },
+    "early_stopping_params": {
+        "monitor": "val_loss",
+        "min_delta": 0.005,
+        "patience": 10,
+        "verbose": true,
+        "mode": "min"
+    },
+    "gradient_clip_val": 0.1,
+    "accumulate_grad_batches": 1,
+}
+```
+
+Details of model parameters：
+- 见文件 model_parameters.csv
+
+Statistics of model parameters：
+
+```
+   | Name                               | Type                            | Params | Mode
+------------------------------------------------------------------------------------------------
+0  | loss                               | WeightedQuantileLoss            | 0      | train
+1  | logging_metrics                    | ModuleList                      | 0      | train
+2  | input_embeddings                   | MultiEmbedding                  | 1.1 K  | train
+3  | prescalers                         | ModuleDict                      | 2.0 K  | train
+4  | static_variable_selection          | VariableSelectionNetwork        | 137 K  | train
+5  | encoder_variable_selection         | VariableSelectionNetwork        | 310 K  | train
+6  | decoder_variable_selection         | VariableSelectionNetwork        | 25.7 K | train
+7  | static_context_variable_selection  | GatedResidualNetwork            | 66.3 K | train
+8  | static_context_initial_hidden_lstm | GatedResidualNetwork            | 66.3 K | train
+9  | static_context_initial_cell_lstm   | GatedResidualNetwork            | 66.3 K | train
+10 | static_context_enrichment          | GatedResidualNetwork            | 66.3 K | train
+11 | lstm_encoder                       | LSTM                            | 132 K  | train
+12 | lstm_decoder                       | LSTM                            | 132 K  | train
+13 | post_lstm_gate_encoder             | GatedLinearUnit                 | 33.0 K | train
+14 | post_lstm_add_norm_encoder         | AddNorm                         | 256    | train
+15 | static_enrichment                  | GatedResidualNetwork            | 82.7 K | train
+16 | multihead_attn                     | InterpretableMultiHeadAttention | 41.2 K | train
+17 | post_attn_gate_norm                | GateAddNorm                     | 33.3 K | train
+18 | pos_wise_ff                        | GatedResidualNetwork            | 66.3 K | train
+19 | pre_output_gate_norm               | GateAddNorm                     | 33.3 K | train
+20 | output_layer                       | Linear                          | 903    | train
+------------------------------------------------------------------------------------------------
+1.3 M     Trainable params
+0         Non-trainable params
+1.3 M     Total params
+5.181     Total estimated model params size (MB)
+```
